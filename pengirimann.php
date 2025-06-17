@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Supabase\Postgrest\PostgrestClient;
 
 // Initialize Supabase
-$supabaseUrl = 'https://dogqmxadstapacemmb.supabase.co';
+$supabaseUrl = 'https://dogqmxadstqpaacenrnb.supabase.co';
 $supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3FteGFkc3RxcGFhY2Vucm5iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjQyODUsImV4cCI6MjA2NTcwMDI4NX0.pNf4kLpFaPUks2sTegXV12a61OigTYCuw_AGn0ISjwM';
 $supabase = new PostgrestClient($supabaseUrl, $supabaseKey);
 
