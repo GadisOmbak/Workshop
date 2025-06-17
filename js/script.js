@@ -493,4 +493,13 @@ function initFloatingButton() {
 // Initialize floating button
 initFloatingButton();
 
+const { data, error } = await supabase
+  .from('pengiriman')
+  .select('*')
+  .limit(1);
+
+if (error) {
+  console.error('Supabase connection error:', error);
+  alert('Database connection failed: ' + error.message);
+}
 
