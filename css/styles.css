@@ -1,0 +1,88 @@
+/* Custom styles for shipping management */
+.card-shipping {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-shipping:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.required-field::after {
+    content: " *";
+    color: #e74a3b;
+}
+
+/* Badge colors for destinations */
+.badge-GT {
+    background-color: #4e73df;
+    color: white;
+}
+
+.badge-MT {
+    background-color: #1cc88a;
+    color: white;
+}
+
+.badge-OL {
+    background-color: #36b9cc;
+    color: white;
+}
+
+.badge-CS {
+    background-color: #f6c23e;
+    color: white;
+}
+
+/* Floating action button */
+.floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Animation for floating button */
+.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-10px);}
+    60% {transform: translateY(-5px);}
+}
+
+/* Table row hover effect */
+.shipping-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.shipping-table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* Form styling */
+.shipping-form .form-control {
+    border-radius: 0.35rem;
+}
+
+.shipping-form .select2-container .select2-selection--single {
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.35rem;
+}
+
+.shipping-form .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: calc(1.5em + 0.75rem + 2px);
+}
