@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="PT SAM Production Dashboard">
+    <meta name="author" content="PT SAM">
+
+    <title> Shipping Management</title>
+
+    <!-- Custom fonts -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <!-- DataTables -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    
+    <style>
+    :root {
+        --primary: #4e73df;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+
+        /* Tambahan untuk sidebar */
+        --sidebar-bg: #1e1e2d;
+        --sidebar-text: #cfd2e2;
+        --sidebar-icon: #cfd2e2;
+        --sidebar-hover-bg: #2a2a40;
+        --sidebar-active-bg: #363654;
+        --sidebar-active-text: #ffffff;
+        --sidebar-active-icon: #ffffff;
+    }
+
+    /* Sidebar enhancements */
+    .sidebar {
+        background: linear-gradient(180deg, var(--sidebar-bg) 0%, #224abe 100%);
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-brand {
+        height: 4.375rem;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-brand-text {
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: 0.05rem;
+    }
+
+    .sidebar .nav-item .nav-link {
+        color: var(--sidebar-text);
+        padding: 1rem;
+        margin: 0 0.5rem;
+        border-radius: 0.35rem;
+        transition: all 0.3s;
+    }
+
+    .sidebar .nav-item .nav-link i {
+        color: var(--sidebar-icon);
+        transition: all 0.3s;
+    }
+
+    .sidebar .nav-item .nav-link:hover {
+        background: var(--sidebar-hover-bg);
+        color: var(--sidebar-active-text);
+    }
+
+    .sidebar .nav-item .nav-link:hover i {
+        color: var(--sidebar-active-icon);
+    }
+
+    .sidebar .nav-item.active .nav-link {
+        background: var(--sidebar-active-bg);
+        color: var(--sidebar-active-text);
+    }
+
+    .sidebar .nav-item.active .nav-link i {
+        color: var(--sidebar-active-icon);
+    }
+
+    .sidebar-divider {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .sidebar-heading {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        padding: 0 1.5rem;
+    }
+
+    .sidebar .collapse-inner {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 0.35rem;
+    }
+
+    .sidebar .collapse-item {
+        color: var(--sidebar-text);
+        padding: 0.5rem 1rem;
+        margin: 0 0.1rem;
+        border-radius: 0.35rem;
+        transition: all 0.3s;
+    }
+
+    .sidebar .collapse-item:hover {
+        background: var(--sidebar-hover-bg);
+        color: var(--sidebar-active-text);
+        text-decoration: none;
+    }
+
+    .sidebar-toggler {
+        transition: all 0.3s;
+    }
+
+    .sidebar-toggler:hover {
+        transform: rotate(180deg);
+    }
+
+    /* Card styles */
+    .card-counter {
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .card-counter:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+    }
+
+    .progress-sm {
+        height: 0.5rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    .model-selector .dropdown-item.active {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    /* Floating button */
+    .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    /* Shipping-specific styles */
+    .card-shipping {
+        border-left: 4px solid #4e73df;
+        transition: all 0.3s ease;
+    }
+
+    .card-shipping:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .shipping-form {
+        background: #fff;
+        border-radius: 0.35rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        padding: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .required-field::after {
+        content: " *";
+        color: #e74a3b;
+    }
+
+    .shipping-table th {
+        background-color: #4e73df;
+        color: white;
+    }
+
+    .tujuan-badge {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.35em 0.65em;
+    }
+
+    .badge-GT {
+        background-color: #1cc88a;
+        color: white;
+    }
+
+    .badge-MT {
+        background-color: #36b9cc;
+        color: white;
+    }
+
+    .badge-OL {
+        background-color: #f6c23e;
+        color: #000;
+    }
+
+    .badge-CS {
+        background-color: #e74a3b;
+        color: white;
+    }
+
+    .animate-bounce {
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + 0.75rem + 2px);
+    }
+</style>
+
+</head>
+
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.php">
+                <div class="sidebar-brand-icon">
+                    <i class="fas fa-shoe-prints"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">PT SAM</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="dashboard.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Overview</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Data Management
+            </div>
+
+            <!-- Nav Item - Products Collapse Menu -->
+            <?php if(canAccess('produk')): ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
+                    aria-expanded="true" aria-controls="collapseProducts">
+                    <i class="fas fa-fw fa-boxes"></i>
+                    <span>Products</span>
+                    <i class="fas fa-fw fa-angle-down float-right"></i>
+                </a>
+                <div id="collapseProducts" class="collapse" aria-labelledby="headingProducts" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Product Categories:</h6>
+                        <a class="collapse-item" href="#">Shoes</a>
+                    </div>
+                </div>
+            </li>
+            <?php endif; ?>
+
+            <!-- Nav Item - Input Data Collapse Menu -->
+            <?php if(canAccess('input_data')): ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInput"
+                    aria-expanded="true" aria-controls="collapseInput">
+                    <i class="fas fa-fw fa-edit"></i>
+                    <span>Input Data</span>
+                    <i class="fas fa-fw fa-angle-down float-right"></i>
+                </a>
+                <div id="collapseInput" class="collapse" aria-labelledby="headingInput" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Data Input:</h6>
+                        <a class="collapse-item" href="inputss.php">Daily Input</a>
+                        <a class="collapse-item" href="newprod.php">New Product</a>
+                    </div>
+                </div>
+            </li>
+            <?php endif; ?>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                User Management
+            </div>
+
+            <!-- Nav Item - Access Rights -->
+            <?php if(canAccess('hak_akses')): ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAccess"
+                    aria-expanded="true" aria-controls="collapseAccess">
+                    <i class="fas fa-fw fa-user-shield"></i>
+                    <span>Access Rights</span>
+                    <i class="fas fa-fw fa-angle-down float-right"></i>
+                </a>
+                <div id="collapseAccess" class="collapse" aria-labelledby="headingAccess" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">User Management:</h6>
+                        <a class="collapse-item" href="role.php">User Roles</a>
+                    </div>
+                </div>
+            </li>
+            <?php endif; ?>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Shipping
+            </div>
+
+            <!-- Nav Item - Shipping -->
+            <?php if(canAccess('pengiriman')): ?>
+            <li class="nav-item">
+                <a class="nav-link" href="pengirimann.php">
+                    <i class="fas fa-fw fa-truck"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+            <?php endif; ?>
+            
+            <!-- Nav Item - Reports -->
+            <?php if(canAccess('laporan_bulanan')): ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReports"
+                    aria-expanded="true" aria-controls="collapseReports">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Reports</span>
+                    <i class="fas fa-fw fa-angle-down float-right"></i>
+                </a>
+                <div id="collapseReports" class="collapse" aria-labelledby="headingReports"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Report Types:</h6>
+                        <a class="collapse-item" href="laporan.php">Monthly</a>
+                    </div>
+                </div>
+            </li>
+            <?php endif; ?>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle">
+                    <i class="fas fa-angle-left text-white"></i>
+                </button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                        <!-- Sidebar Toggle (Topbar) -->
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+
+                        <!-- Topbar Navbar -->
+                        <ul class="navbar-nav ml-auto">
+
+                            <!-- Nav Item - User Information -->
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2 d-none d-lg-inline">
+                                            <span class="text-gray-800 font-weight-bold">
+                                                <?php echo $_SESSION['username']; ?>
+                                            </span>
+                                            <span class="badge badge-primary ml-1">
+                                                <?php echo $_SESSION['role']; ?>
+                                            </span>
+                                        </div>
+                                        <div class="img-profile-wrapper">
+                                            <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                                            <span class="status-indicator bg-success"></span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <!-- Dropdown - User Information -->
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                    aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Logout
+                                    </a>
+                                </div>
+                            </li>
+
+                        </ul>
+
+                    </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Shipping Management</h1>
+                        <div class="d-none d-sm-inline-block">
+                            <span class="badge badge-primary p-2">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <?php echo date('d F Y'); ?>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2 card-shipping">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Total Shipments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?= $totalShipments ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-truck fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2 card-shipping">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Today's Shipments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?= $todayShipments ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2 card-shipping">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Total Items Shipped</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?= number_format($totalItems) ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2 card-shipping">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Destinations</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?= $uniqueDestinations ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-map-marker-alt fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Form -->
+                    <div class="row mb-4">
+                        <div class="col-lg-12">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-plus-circle mr-2"></i>New Shipping Data
+                                    </h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" 
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" 
+                                             aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Actions:</div>
+                                            <a class="dropdown-item" href="#" id="clearForm">
+                                                <i class="fas fa-broom mr-2"></i>Clear Form
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body shipping-form">
+                                    <form method="POST" id="shippingForm">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="tanggal" class="form-label required-field">Shipping Date</label>
+                                                <input type="date" class="form-control" id="tanggal" name="tanggal" 
+                                                       value="<?php echo date('Y-m-d'); ?>" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="no_surat_jalan" class="form-label required-field">Shipping Document No.</label>
+                                                <input type="text" class="form-control" id="no_surat_jalan" 
+                                                       name="no_surat_jalan" placeholder="Enter document number" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="no_sphp" class="form-label required-field">SPHP Number</label>
+                                                <input type="text" class="form-control" id="no_sphp" name="no_sphp" 
+                                                       placeholder="Enter SPHP number" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="artikel" class="form-label required-field">Article</label>
+                                                <input type="text" class="form-control" id="artikel" name="artikel" 
+                                                       placeholder="Enter article code" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="jumlah" class="form-label required-field">Quantity</label>
+                                                <input type="number" class="form-control" id="jumlah" name="jumlah" 
+                                                       min="1" placeholder="Enter quantity" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="tujuan" class="form-label required-field">Destination</label>
+                                                <select class="form-control select2" id="tujuan" name="tujuan" required>
+                                                    <option value="">-- Select Destination --</option>
+                                                    <option value="GT/MARLINA">GT/MARLINA</option>
+                                                    <option value="MT/PIK">MT/PIK</option>
+                                                    <option value="OL/PIK">OL/PIK</option>
+                                                    <option value="CS/PIK">CS/PIK</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-right mt-4">
+                                            <button type="submit" class="btn btn-primary btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </span>
+                                                <span class="text">Submit Shipping</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Data Table -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-table mr-2"></i>Shipping History
+                                    </h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" 
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" 
+                                             aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Table Actions:</div>
+                                            <a class="dropdown-item" href="#" id="refreshTable">
+                                                <i class="fas fa-sync-alt mr-2"></i>Refresh
+                                            </a>
+                                            <a class="dropdown-item" href="#" id="exportExcel">
+                                                <i class="fas fa-file-excel mr-2"></i>Export to Excel
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered shipping-table" id="dataTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Doc. No.</th>
+                                                    <th>SPHP No.</th>
+                                                    <th>Article</th>
+                                                    <th>Qty</th>
+                                                    <th>Destination</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php while($row = $data_pengiriman->fetch_assoc()): ?>
+                                                    <tr>
+                                                        <td><?= date('d M Y', strtotime($row['tanggal_pengiriman'])) ?></td>
+                                                        <td><?= htmlspecialchars($row['no_surat_jalan']) ?></td>
+                                                        <td><?= htmlspecialchars($row['no_sphp']) ?></td>
+                                                        <td><?= htmlspecialchars($row['artikel']) ?></td>
+                                                        <td class="text-right"><?= number_format($row['jumlah']) ?></td>
+                                                        <td>
+                                                            <?php 
+                                                                $tujuan = htmlspecialchars($row['tujuan']);
+                                                                $badgeClass = 'badge-primary';
+                                                                if (strpos($tujuan, 'GT') !== false) $badgeClass = 'badge-GT';
+                                                                elseif (strpos($tujuan, 'MT') !== false) $badgeClass = 'badge-MT';
+                                                                elseif (strpos($tujuan, 'OL') !== false) $badgeClass = 'badge-OL';
+                                                                elseif (strpos($tujuan, 'CS') !== false) $badgeClass = 'badge-CS';
+                                                            ?>
+                                                            <span class="badge tujuan-badge <?= $badgeClass ?>">
+                                                                <?= $tujuan ?>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-sm btn-circle btn-info view-details" 
+                                                                    data-id="<?= $row['id'] ?>" title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-circle btn-danger delete-item" 
+                                                                    data-id="<?= $row['id'] ?>" title="Delete">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; PT SAM <?php echo date('Y'); ?></span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.php">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Shipping Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="detailsModalLabel">Shipping Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="text-white">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="shippingDetails">
+                    <!-- Details will be loaded here via AJAX -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="printDetails">
+                        <i class="fas fa-print mr-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- DataTables -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Custom Shipping Script -->
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+            <script>
+            const supabaseUrl = 'https://dogqmxadstqpaacenrnb.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3FteGFkc3RxcGFhY2Vucm5iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjQyODUsImV4cCI6MjA2NTcwMDI4NX0.pNf4kLpFaPUks2sTegXV12a61OigTYCuw_AGn0ISjwM';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            </script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            var table = $('#dataTable').DataTable({
+                "order": [[0, "desc"]],
+                "responsive": true,
+                "language": {
+                    "lengthMenu": "Show _MENU_ entries per page",
+                    "zeroRecords": "No shipping records found",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total entries)",
+                    "search": "Search:",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
+                }
+            });
+
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: "-- Select Destination --",
+                allowClear: true
+            });
+
+            // Set today's date
+            $('#tanggal').val(new Date().toISOString().substr(0, 10));
+
+            // Form validation
+            $('#shippingForm').on('submit', function(e) {
+                let isValid = true;
+
+                $(this).find('[required]').each(function() {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+
+                if ($('#jumlah').val() <= 0) {
+                    isValid = false;
+                    $('#jumlah').addClass('is-invalid');
+                } else {
+                    $('#jumlah').removeClass('is-invalid');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please fill all required fields with valid values',
+                    });
+                }
+            });
+
+            // Clear form
+            $('#clearForm').click(function(e) {
+                e.preventDefault();
+                $('#shippingForm')[0].reset();
+                $('.select2').val(null).trigger('change');
+                $('#tanggal').val(new Date().toISOString().substr(0, 10));
+                $('.is-invalid').removeClass('is-invalid');
+            });
+
+            // Refresh table
+            $('#refreshTable').click(function(e) {
+                e.preventDefault();
+                table.ajax.reload(null, false);
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Table refreshed',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            });
+
+            // View details
+            $(document).on('click', '.view-details', function() {
+                var id = $(this).data('id');
+                $('#detailsModal').modal('show');
+
+                $.ajax({
+                    url: 'get_shipping_details.php',
+                    type: 'GET',
+                    data: {id: id},
+                    success: function(response) {
+                        $('#shippingDetails').html(response);
+                    },
+                    error: function() {
+                        $('#shippingDetails').html('<div class="alert alert-danger">Failed to load details</div>');
+                    }
+                });
+            });
+
+            // Print
+            $('#printDetails').click(function() {
+                var printContent = $('#shippingDetails').html();
+                var originalContent = $('body').html();
+
+                $('body').html(printContent);
+                window.print();
+                $('body').html(originalContent);
+                $('#detailsModal').modal('show');
+            });
+
+            // ✅ Only ONE delete-item function (Supabase)
+            $(document).on('click', '.delete-item', function() {
+                var id = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        supabase.from('pengiriman')
+                            .delete()
+                            .eq('id', id)
+                            .then(({ error }) => {
+                                if (error) {
+                                    Swal.fire('Error!', 'Failed to delete record: ' + error.message, 'error');
+                                } else {
+                                    Swal.fire('Deleted!', 'Shipping record has been deleted.', 'success')
+                                        .then(() => location.reload());
+                                }
+                            });
+                    }
+                });
+            });
+
+            // Export Excel (placeholder)
+            $('#exportExcel').click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Export to Excel',
+                    text: 'This feature will be available in the next version',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            });
+
+            // Floating action button
+            $('<button class="btn btn-primary btn-lg rounded-circle floating-btn animate-bounce">' +
+            '<i class="fas fa-plus"></i></button>').appendTo('body').click(function() {
+                $('html, body').animate({
+                    scrollTop: $('#shippingForm').offset().top - 20
+                }, 500);
+            });
+        });
+    </script>
+
+</body>
+</html>
